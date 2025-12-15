@@ -2,14 +2,14 @@
 
 % Packages for layout and math
 \usepackage[margin=0.2cm]{geometry} % Narrow margins to fit more content
-\usepackage{multicol}              % For the 2-column layout
+\usepackage{multicol} % For the 2-column layout
 \usepackage{amsmath,amssymb}
 \usepackage{enumitem}
 \usepackage{titlesec}
 
 % Global font and spacing tweaks (smaller than plain \tiny)
-\linespread{0.8}        % tighten line spacing a bit
-\tiny                    % start from tiny
+\linespread{0.8} % tighten line spacing a bit
+\tiny % start from tiny
 \makeatletter
 \renewcommand\normalsize{%
   \@setfontsize\normalsize{6pt}{7pt}% smaller base size than default tiny
@@ -31,10 +31,12 @@
 }
 
 \begin{document}
+
 \begin{multicols}{2}
 
 \Block{%
 \textbf{Cross-Validation (Cross-Val)}\\
+Objective: partition data into folds to estimate model generalization.\\
 Cross-val tests model on new data. Split data into folds, train on most, test on one, repeat. Avg performance is reliable.\\
 \textbf{Pros:} Better perf estimate than single split; Detects overfitting.\\
 \textbf{Cons:} More time/compute for many folds/large data; Tricky for time-series.
@@ -42,13 +44,21 @@ Cross-val tests model on new data. Split data into folds, train on most, test on
 
 \Block{%
 \textbf{Convex Optimization (Convex-Opt)}\\
+Objective: minimize convex $f(x)$ s.t. convex $g_i(x)\le0$, affine $h_j(x)=0$.\\
 Convex opt finds global best in bowl-shaped space. Used in SVMs, regression.\\
 \textbf{Pros:} Guarantees global min; Efficient solvers.\\
 \textbf{Cons:} Not all probs convex, need approx; Heavy for large probs.
 }
 
 \Block{%
+\textbf{Solving LP/QP (Quick Guide)}\\
+Form: LP $\min_x c^\top x$ s.t.\ $Ax\le b$, $A_{\rm eq}x=b_{\rm eq}$; QP $\min_x \tfrac12 x^\top Qx+c^\top x$ s.t.\ linear constraints, $Q\succeq0$.\\
+Steps: (1) collect vars into $x$, write all linear constraints; (2) simplify equalities by eliminating fixed vars; (3) small/medium: use interior-point LP/QP solver; large/sparse: use (projected) gradient / coordinate descent. Example QP: L2-regularized least squares $\min_w \tfrac12\|Xw-y\|_2^2+\tfrac\lambda2\|w\|_2^2$ is a convex QP; closed form $(X^\top X+\lambda I)w=X^\top y$ or solve with CG. KKT: primal feas., dual feas., stationarity, complementary slackness certify optimality.
+}
+
+\Block{%
 \textbf{Gradient Descent (GD)}\\
+Update: $\theta^{t+1}=\theta^t-\eta\nabla f(\theta^t)$.\\
 GD updates params opposite grad of loss to min errors.\\
 \textbf{Pros:} Simple to implement; Good for convex.\\
 \textbf{Cons:} Slow on large data (full set/step); Stuck in local min for non-convex.
@@ -56,6 +66,7 @@ GD updates params opposite grad of loss to min errors.\\
 
 \Block{%
 \textbf{Stochastic Gradient Descent (SGD)}\\
+Update (single sample $i$): $\theta^{t+1}=\theta^t-\eta\nabla\ell_i(\theta^t)$.\\
 SGD like GD but updates w/one random point, faster/noisier.\\
 \textbf{Pros:} Faster on large data; Escapes local min via noise.\\
 \textbf{Cons:} Noisy, erratic; Needs LR scheduling.
@@ -63,6 +74,7 @@ SGD like GD but updates w/one random point, faster/noisier.\\
 
 \Block{%
 \textbf{Mini-batch Gradient Descent}\\
+Update (batch $B_t$): $\theta^{t+1}=\theta^t-\eta\frac1{|B_t|}\sum_{i\in B_t}\nabla\ell_i(\theta^t)$.\\
 Mini-batch GD updates w/small batches, balances GD/SGD.\\
 \textbf{Pros:} Faster than GD, less noisy than SGD; GPU-efficient.\\
 \textbf{Cons:} Batch size tuning needed; Can stuck in local min.
@@ -70,6 +82,7 @@ Mini-batch GD updates w/small batches, balances GD/SGD.\\
 
 \Block{%
 \textbf{Data Augmentation}\\
+Objective: minimize loss on augmented dataset $\min_\theta\sum_{(x,y)\in\mathcal D_{\text{aug}}}\ell(y,f_\theta(x))$.\\
 Data aug mods existing ex (rotate, noise) for robust models.\\
 \textbf{Pros:} More data w/o collect; Better gen, esp images.\\
 \textbf{Cons:} May add unreal data; Compute-heavy in train.
@@ -77,6 +90,7 @@ Data aug mods existing ex (rotate, noise) for robust models.\\
 
 \Block{%
 \textbf{Lagrangian}\\
+Formulation: $L(w,\lambda,\nu)=f(w)+\sum_i\lambda_i g_i(w)+\sum_j\nu_j h_j(w)$, $\lambda_i\ge0$.\\
 Lagrangian combines obj func w/constraints via mults for opt pts.\\
 \textbf{Pros:} Solves eq/ineq constraints; Base for SVMs.\\
 \textbf{Cons:} Complex math; Needs KKT checks.
@@ -84,6 +98,7 @@ Lagrangian combines obj func w/constraints via mults for opt pts.\\
 
 \Block{%
 \textbf{Dual Lagrangian}\\
+Dual problem: $\max_{\lambda\ge0,\nu} g(\lambda,\nu)$ where $g(\lambda,\nu)=\inf_w L(w,\lambda,\nu)$.\\
 Dual reformulates primal, often easier, esp kernels.\\
 \textbf{Pros:} Simplifies computation in many cases; Enables kernel trick for non-linear problems.\\
 \textbf{Cons:} May increase complexity for some formulations; Requires careful handling of dual variables.
@@ -91,6 +106,7 @@ Dual reformulates primal, often easier, esp kernels.\\
 
 \Block{%
 \textbf{K-Nearest Neighbors (KNN)}\\
+Objective: no parametric minimization; prediction $\hat y(x)=\operatorname{mode}\{y_i:x_i\in\mathcal N_k(x)\}$.\\
 KNN classifies a new data point based on the majority label of its 'k' closest neighbors in the training data, using distance metrics like Euclidean.\\
 \textbf{Pros:} Simple and intuitive, no training phase needed; Works well for non-linear data.\\
 \textbf{Cons:} Slow for large datasets (computes distances at prediction time); Sensitive to irrelevant features and noise.
@@ -98,6 +114,7 @@ KNN classifies a new data point based on the majority label of its 'k' closest n
 
 \Block{%
 \textbf{Naive Bayes}\\
+Objective: $\min_\theta -\sum_i\log p_\theta(y_i)p_\theta(x_i|y_i)$ with $p(x|y)=\prod_j p(x_j|y)$.\\
 Naive Bayes is a probabilistic classifier that applies Bayes' theorem, assuming features are independent, to predict class probabilities.\\
 \textbf{Pros:} Fast and efficient, especially for high-dimensional data like text; Performs well even with the 'naive' independence assumption.\\
 \textbf{Cons:} Assumption of feature independence often unrealistic; Struggles with zero-probability issues (use smoothing).
@@ -105,6 +122,7 @@ Naive Bayes is a probabilistic classifier that applies Bayes' theorem, assuming 
 
 \Block{%
 \textbf{Linear Discriminant Analysis (LDA)}\\
+Objective: $\min_{\mu_k,\Sigma,\pi_k} -\sum_i\log(\pi_{y_i}\mathcal N(x_i|\mu_{y_i},\Sigma))$.\\
 LDA projects data onto a lower-dimensional space to maximize class separability, assuming Gaussian distributions and equal covariances.\\
 \textbf{Pros:} Good for dimensionality reduction while preserving class info; Computationally efficient.\\
 \textbf{Cons:} Assumes normality and equal covariances, which may not hold; Linear boundaries only.
@@ -112,6 +130,7 @@ LDA projects data onto a lower-dimensional space to maximize class separability,
 
 \Block{%
 \textbf{Logistic Regression}\\
+Objective: $\min_w \sum_i \log(1+\exp(-y_i w^\top x_i))+\lambda\|w\|_2^2$.\\
 Logistic Regression models the probability of binary outcomes using a sigmoid function on a linear combination of features.\\
 \textbf{Pros:} Interpretable coefficients show feature importance; Handles binary and multi-class (via one-vs-rest).\\
 \textbf{Cons:} Assumes linear decision boundaries; Sensitive to multicollinearity.
@@ -119,6 +138,7 @@ Logistic Regression models the probability of binary outcomes using a sigmoid fu
 
 \Block{%
 \textbf{Support Vector Machines (SVM)}\\
+Soft-margin primal: $\min_{w,b,\xi}\tfrac12\|w\|^2 + C\sum_i\xi_i$ s.t.\ $y_i(w^\top x_i+b)\ge 1-\xi_i$, $\xi_i\ge0$.\\
 SVM finds the hyperplane that best separates classes with the maximum margin, using support vectors.\\
 \textbf{Pros:} Effective in high-dimensional spaces; Robust to overfitting with proper regularization.\\
 \textbf{Cons:} Computationally intensive for large datasets; Sensitive to choice of kernel and parameters.
@@ -126,6 +146,7 @@ SVM finds the hyperplane that best separates classes with the maximum margin, us
 
 \Block{%
 \textbf{Kernel SVM}\\
+Dual: $\max_\alpha \sum_i\alpha_i-\tfrac12\sum_{ij}\alpha_i\alpha_j y_i y_j K(x_i,x_j)$ s.t.\ $\sum_i\alpha_i y_i=0$, $0\le\alpha_i\le C$.\\
 Kernel SVM extends SVM to non-linear data by mapping to higher dimensions via kernels (e.g., RBF) without explicit transformation.\\
 \textbf{Pros:} Handles complex, non-linear boundaries; Versatile with different kernels.\\
 \textbf{Cons:} More computationally expensive; Risk of overfitting if kernel not chosen well.
@@ -133,6 +154,7 @@ Kernel SVM extends SVM to non-linear data by mapping to higher dimensions via ke
 
 \Block{%
 \textbf{Linear Regression}\\
+Objective: $\min_w \sum_i (y_i-w^\top x_i)^2 = \min_w\|Xw-y\|_2^2$.\\
 Linear Regression fits a line to data by minimizing squared errors, predicting outputs as a linear combination of inputs.\\
 \textbf{Pros:} Simple and interpretable; Fast to train.\\
 \textbf{Cons:} Assumes linearity; poor for complex relationships; Sensitive to outliers.
@@ -140,6 +162,7 @@ Linear Regression fits a line to data by minimizing squared errors, predicting o
 
 \Block{%
 \textbf{Ridge Regression}\\
+Objective: $\min_w \sum_i (y_i-w^\top x_i)^2 + \lambda\|w\|_2^2$.\\
 Ridge Regression adds L2 regularization to linear regression to shrink coefficients and handle multicollinearity.\\
 \textbf{Pros:} Reduces overfitting and stabilizes estimates; Good for correlated features.\\
 \textbf{Cons:} Includes all features (no selection); Bias introduced by regularization.
@@ -147,6 +170,7 @@ Ridge Regression adds L2 regularization to linear regression to shrink coefficie
 
 \Block{%
 \textbf{Lasso Regression}\\
+Objective: $\min_w \sum_i (y_i-w^\top x_i)^2 + \lambda\|w\|_1$.\\
 Lasso Regression uses L1 regularization, which can set some coefficients to zero for feature selection.\\
 \textbf{Pros:} Performs automatic feature selection; Handles multicollinearity.\\
 \textbf{Cons:} Can be unstable with highly correlated features; Bias like Ridge.
@@ -154,6 +178,7 @@ Lasso Regression uses L1 regularization, which can set some coefficients to zero
 
 \Block{%
 \textbf{Kernel Ridge}\\
+Objective: $\min_\alpha \|K\alpha-y\|_2^2 + \lambda\alpha^\top K\alpha$.\\
 Kernel Ridge combines Ridge regression with kernels for non-linear fitting.\\
 \textbf{Pros:} Captures non-linear patterns; Regularization prevents overfitting.\\
 \textbf{Cons:} Computationally heavy for large data; Kernel tuning required.
@@ -161,6 +186,7 @@ Kernel Ridge combines Ridge regression with kernels for non-linear fitting.\\
 
 \Block{%
 \textbf{Support Vector Regression (SVR)}\\
+Soft-margin primal: $\min_{w,b,\xi,\xi^*}\tfrac12\|w\|^2 + C\sum_i(\xi_i+\xi_i^*)$ s.t.\ $|y_i-w^\top x_i-b|\le\epsilon+\xi_i$, $\xi_i,\xi_i^*\ge0$.\\
 SVR adapts SVM for regression, finding a function that deviates from actual values by at most epsilon.\\
 \textbf{Pros:} Robust to outliers; Effective in high dimensions.\\
 \textbf{Cons:} Sensitive to parameter choice (C, epsilon); Slow for large datasets.
@@ -168,6 +194,7 @@ SVR adapts SVM for regression, finding a function that deviates from actual valu
 
 \Block{%
 \textbf{Kernel SVR}\\
+Objective: same SVR primal in feature space; dual uses kernel $K(x_i,x_j)$.\\
 Kernel SVR uses kernels for non-linear regression in SVR.\\
 \textbf{Pros:} Handles complex non-linear data; Flexible with kernels.\\
 \textbf{Cons:} Increased complexity and compute; Overfitting risk.
@@ -175,6 +202,7 @@ Kernel SVR uses kernels for non-linear regression in SVR.\\
 
 \Block{%
 \textbf{Polynomial Regression}\\
+Objective: $\min_w \sum_i (y_i-w^\top\phi(x_i))^2$ with polynomial features $\phi(x)$ (e.g.\ degree $d$).\\
 Polynomial Regression fits higher-degree polynomials to capture non-linear trends.\\
 \textbf{Pros:} Simple extension of linear regression; Good for curved relationships.\\
 \textbf{Cons:} Prone to overfitting with high degrees; Extrapolation can be poor.
@@ -182,6 +210,7 @@ Polynomial Regression fits higher-degree polynomials to capture non-linear trend
 
 \Block{%
 \textbf{K-Means}\\
+Objective: $\min_{\{c_k\},\{z_i\}}\sum_i\|x_i-c_{z_i}\|^2$ with $z_i\in\{1,\dots,k\}$.\\
 K-Means partitions data into k clusters by minimizing within-cluster variance, assigning points to nearest centroids.\\
 \textbf{Pros:} Simple and scalable; Fast convergence.\\
 \textbf{Cons:} Needs k specified; sensitive to initialization; Assumes spherical clusters.
@@ -189,6 +218,7 @@ K-Means partitions data into k clusters by minimizing within-cluster variance, a
 
 \Block{%
 \textbf{Gaussian Mixture Model (GMM)}\\
+Objective: $\min_{\pi_k,\mu_k,\Sigma_k} -\sum_i\log\sum_k\pi_k\mathcal N(x_i|\mu_k,\Sigma_k)$ s.t.\ $\pi_k\ge0$, $\sum_k\pi_k=1$.\\
 GMM models data as a mixture of Gaussian distributions, using EM to estimate parameters.\\
 \textbf{Pros:} Handles elliptical clusters and soft assignments; Probabilistic outputs.\\
 \textbf{Cons:} Slower than K-Means; sensitive to init; Assumes Gaussian components.
@@ -196,6 +226,7 @@ GMM models data as a mixture of Gaussian distributions, using EM to estimate par
 
 \Block{%
 \textbf{Perceptron}\\
+Objective (implicit): minimize misclassification by updates $w\leftarrow w+y_i x_i$ on errors.\\
 Perceptron is a single-layer neural network for linear classification, updating weights on errors.\\
 \textbf{Pros:} Basic building block of NNs; Converges for linearly separable data.\\
 \textbf{Cons:} Only linear; no hidden layers; Doesn't handle XOR-like problems.
@@ -203,6 +234,7 @@ Perceptron is a single-layer neural network for linear classification, updating 
 
 \Block{%
 \textbf{Multi-Layer Perceptron (MLP)}\\
+Objective: $\min_\theta \sum_i \ell(y_i,f_\theta(x_i))+\lambda\|\theta\|^2$ (cross-entropy/MSE).\\
 MLP adds hidden layers to Perceptron for non-linear learning via backpropagation.\\
 \textbf{Pros:} Universal approximator for functions; Handles complex data.\\
 \textbf{Cons:} Prone to overfitting; needs regularization; Black-box; hard to interpret.
@@ -210,91 +242,15 @@ MLP adds hidden layers to Perceptron for non-linear learning via backpropagation
 
 \Block{%
 \textbf{Convolutional Neural Networks (CNN)}\\
+Objective: same as MLP, $\min_\theta \sum_i \ell(y_i,f_\theta(x_i))+\\Omega(\theta)$, with conv/pooling layers.\\
 CNN uses convolutional layers for feature extraction, ideal for grid data like images.\\
 \textbf{Pros:} Excellent for spatial hierarchies (e.g., images); Parameter sharing reduces compute.\\
 \textbf{Cons:} Requires large data and GPU; Overfits without augmentation.
 }
 
 \Block{%
-\textbf{KNN and Naive Bayes}\\
-\textbf{Similarities:} Both simple classifiers for beginners; Non-parametric (KNN) or probabilistic (NB).\\
-\textbf{Differences:} KNN instance-based (lazy); NB model-based (eager); KNN slow predict; NB fast but assumes independence.
-}
-
-\Block{%
-\textbf{Naive Bayes and LDA}\\
-\textbf{Similarities:} Probabilistic, assume Gaussian-like distributions; Good for text/multi-class.\\
-\textbf{Differences:} NB independent features; LDA shared covariances; LDA for dim reduction; NB pure classification.
-}
-
-\Block{%
-\textbf{LDA and Logistic Regression}\\
-\textbf{Similarities:} Linear decision boundaries; Used for classification.\\
-\textbf{Differences:} LDA generative (models distributions); Logistic discriminative (probabilities); LDA assumes normality; Logistic no distribution assumption.
-}
-
-\Block{%
-\textbf{Logistic Regression and SVM}\\
-\textbf{Similarities:} Linear classifiers; can be regularized; Binary/multi-class capable.\\
-\textbf{Differences:} Logistic probs via sigmoid; SVM margins via hyperplane; SVM better for small data; Logistic interpretable.
-}
-
-\Block{%
-\textbf{SVM and Kernel SVM}\\
-\textbf{Similarities:} Maximize margins for separation; Use support vectors.\\
-\textbf{Differences:} SVM linear; Kernel non-linear via mapping; Kernel more flexible but slower.
-}
-
-\Block{%
-\textbf{Linear Regression and Logistic Regression}\\
-\textbf{Similarities:} Linear models; optimized via gradients; Interpretable.\\
-\textbf{Differences:} Linear for continuous; Logistic for binary probs; Linear MSE loss; Logistic cross-entropy.
-}
-
-\Block{%
-\textbf{Ridge Regression and Lasso Regression}\\
-\textbf{Similarities:} Regularized linear regression; Handle multicollinearity/overfitting.\\
-\textbf{Differences:} Ridge L2 (shrinks); Lasso L1 (selects); Lasso for sparse; Ridge keeps all.
-}
-
-\Block{%
-\textbf{Kernel Ridge and Kernel SVR}\\
-\textbf{Similarities:} Kernel-based for non-linear regression; Regularized.\\
-\textbf{Differences:} Kernel Ridge least-squares; SVR epsilon-tube; SVR robust to outliers; Kernel Ridge variance-focused.
-}
-
-\Block{%
-\textbf{SVR and Kernel SVR}\\
-\textbf{Similarities:} SVM-based regression; Margin/epsilon concept.\\
-\textbf{Differences:} SVR linear; Kernel non-linear; Kernel captures curves better but more compute.
-}
-
-\Block{%
-\textbf{Polynomial Regression and Kernel Ridge}\\
-\textbf{Similarities:} Non-linear extensions of linear; Fit curves.\\
-\textbf{Differences:} Polynomial explicit degrees; Kernel implicit via functions; Polynomial overfitting risk; Kernel regularized.
-}
-
-\Block{%
-\textbf{K-Means and GMM}\\
-\textbf{Similarities:} Cluster data unsupervised; Iterative (centroids/EM).\\
-\textbf{Differences:} K-Means hard assign, spherical; GMM soft, probabilistic, elliptical; GMM more flexible but slower.
-}
-
-\Block{%
-\textbf{Perceptron and MLP}\\
-\textbf{Similarities:} Neural networks; weight updates; Building blocks.\\
-\textbf{Differences:} Perceptron single-layer linear; MLP multi-layer non-linear; MLP backprop; Perceptron simple rule.
-}
-
-\Block{%
-\textbf{MLP and CNN}\\
-\textbf{Similarities:} Deep NNs with hidden layers; Backprop training.\\
-\textbf{Differences:} MLP fully connected; CNN convolutional for spatial; CNN better for images; MLP general.
-}
-
-\Block{%
 \textbf{Sequential Minimal Optimization (SMO)}\\
+Objective: solve SVM dual $\max_\alpha \sum_i\alpha_i-\tfrac12\sum_{ij}\alpha_i\alpha_j y_i y_j K_{ij}$ s.t.\ $0\le\alpha_i\le C$, $\sum_i\alpha_i y_i=0$ by updating two $\alpha$ at a time.\\
 SMO solves the SVM dual by updating two Lagrange multipliers at a time while keeping constraints satisfied.\\
 \textbf{Pros:} Efficient for large SVM problems; Avoids large QP solvers; Works well with kernels.\\
 \textbf{Cons:} More complex to implement than simple GD; Speed depends on heuristics for picking pairs.
@@ -302,6 +258,7 @@ SMO solves the SVM dual by updating two Lagrange multipliers at a time while kee
 
 \Block{%
 \textbf{RANSAC}\\
+Objective: find parameters $\theta$ maximizing inliers while being robust to outliers.\\
 RANSAC repeatedly samples minimal subsets, fits a model, and counts inliers to find a robust fit under many outliers.\\
 \textbf{Pros:} Very robust to outliers; Simple concept; Works well for geometric vision tasks.\\
 \textbf{Cons:} Needs many iterations if inlier ratio low; Requires thresholds and max-iter tuning.
@@ -309,6 +266,7 @@ RANSAC repeatedly samples minimal subsets, fits a model, and counts inliers to f
 
 \Block{%
 \textbf{Expectation Maximization (EM)}\\
+Objective: maximize $\ell(\theta)=\sum_i\log\sum_Z p(x_i,Z;\theta)$. E-step: compute $Q(\theta|\theta^{old})=\mathbb E_{Z|X,\theta^{old}}[\log p(X,Z;\theta)]$. M-step: $\theta^{new}=\arg\max_\theta Q(\theta|\theta^{old})$.\\
 EM maximizes a latent-variable likelihood by alternating: E-step (compute posteriors/expectations) and M-step (maximize expected complete log-likelihood).\\
 \textbf{Pros:} Handles missing/latent variables naturally; Closed-form updates for models like GMM.\\
 \textbf{Cons:} Converges only to local maxima; Can be slow; Sensitive to initialization.
@@ -316,6 +274,7 @@ EM maximizes a latent-variable likelihood by alternating: E-step (compute poster
 
 \Block{%
 \textbf{Dimensionality Reduction}\\
+Objective: find mapping $z=f(x)$ preserving variance, distances, or class info.\\
 Dimensionality reduction maps high-dim data to lower-dim space while preserving structure (variance, distances, or class info).\\
 \textbf{Pros:} Reduces storage and computation; Helps visualization and denoising.\\
 \textbf{Cons:} May discard useful information; Choice of method and target dim is non-trivial.
@@ -323,6 +282,7 @@ Dimensionality reduction maps high-dim data to lower-dim space while preserving 
 
 \Block{%
 \textbf{Feature Selection}\\
+Objective: $\min_w \sum_i \ell(y_i,f_w(x_i))+\lambda\|w\|_0$ (NP-hard, relaxed to L1 or greedy).\\
 Feature selection chooses a subset of input features (filter, wrapper, embedded methods) instead of transforming them.\\
 \textbf{Pros:} Improves interpretability; Can reduce overfitting and training time.\\
 \textbf{Cons:} Search can be expensive; Risk of discarding informative but weak features.
@@ -330,6 +290,7 @@ Feature selection chooses a subset of input features (filter, wrapper, embedded 
 
 \Block{%
 \textbf{Linear Dimensionality Reduction}\\
+Objective: $\max_W \operatorname{tr}(W^\top SW)$ s.t.\ $W^\top W=I$ (PCA), or ratio of between/within scatter (LDA).\\
 Linear DR finds projections $z = W^\top x$ that keep most variance or class separation (e.g., PCA, LDA).\\
 \textbf{Pros:} Simple and fast; Often has eigenvalue/eigenvector closed forms.\\
 \textbf{Cons:} Only captures linear structure; Fails on curved manifolds (non-linear relations).
@@ -337,6 +298,7 @@ Linear DR finds projections $z = W^\top x$ that keep most variance or class sepa
 
 \Block{%
 \textbf{Singular Value Decomposition (SVD)}\\
+Objective: $X=U\Sigma V^\top$, best rank-$k$ approx: $\min_{\operatorname{rank}(X_k)\le k}\|X-X_k\|_F^2$ solved by $X_k=U_k\Sigma_k V_k^\top$.\\
 SVD: $X = U\Sigma V^\top$, with orthogonal $U,V$ and singular values in $\Sigma$.\\
 \textbf{Pros:} Basis of PCA and low-rank approximations; Optimal rank-$k$ approximation in Frobenius norm.\\
 \textbf{Cons:} Expensive on very large matrices; Often needs truncated or randomized SVD.
@@ -344,6 +306,7 @@ SVD: $X = U\Sigma V^\top$, with orthogonal $U,V$ and singular values in $\Sigma$
 
 \Block{%
 \textbf{Principal Component Analysis (PCA)}\\
+Objective: $\max_W \sum_i\|W^\top x_i\|^2$ s.t.\ $W^\top W=I$ (find top eigenvectors of covariance).\\
 PCA finds directions of maximum variance (eigenvectors of covariance, or top right-singular vectors of $X$).\\
 \textbf{Pros:} Unsupervised linear DR; Decorrelates features; Often improves downstream methods.\\
 \textbf{Cons:} Components are linear and not label-aware; Sensitive to scaling and outliers.
@@ -351,6 +314,7 @@ PCA finds directions of maximum variance (eigenvectors of covariance, or top rig
 
 \Block{%
 \textbf{Kernel PCA}\\
+Objective: same as PCA in feature space; eigendecomposition of centered kernel matrix $K$.\\
 Kernel PCA applies PCA in an implicit feature space using a kernel matrix instead of the covariance of raw features.\\
 \textbf{Pros:} Captures non-linear structure; Works with same kernels as Kernel SVM.\\
 \textbf{Cons:} Needs storing and eigendecomposing $N\times N$ kernel matrix; Less interpretable than standard PCA.
@@ -358,6 +322,7 @@ Kernel PCA applies PCA in an implicit feature space using a kernel matrix instea
 
 \Block{%
 \textbf{Whitening}\\
+Objective: enforce $\text{Cov}(z)=I$ via linear transform $z=\Sigma^{-1/2}U^\top x$ after PCA.\\
 Whitening transforms data so that it has zero mean and identity covariance (decorrelated, unit variance). Often done after PCA.\\
 \textbf{Pros:} Removes linear correlations; Useful preprocessing for some models and ICA.\\
 \textbf{Cons:} Can amplify noise in low-variance directions; Requires good covariance estimate.
@@ -365,6 +330,7 @@ Whitening transforms data so that it has zero mean and identity covariance (deco
 
 \Block{%
 \textbf{Looking at Learning Curves}\\
+Objective: plot train and test error vs. training set size or training iterations to diagnose bias/variance.\\
 Learning curves plot train and validation error vs. training set size or epochs.\\
 \textbf{Pros:} Helps diagnose high-bias vs. high-variance; Guides whether to get more data or change model complexity.\\
 \textbf{Cons:} Requires repeated training; Interpretation can be ambiguous with noisy curves.
@@ -372,9 +338,11 @@ Learning curves plot train and validation error vs. training set size or epochs.
 
 \Block{%
 \textbf{PCA, Kernel PCA, Whitening}\\
+Objectives: PCA max variance in input; Kernel PCA max variance in feature space; Whitening enforce $\text{Cov}(z)=I$.\\
 \textbf{Similarities:} All linear transforms in some space; Used for preprocessing and dimensionality reduction.\\
 \textbf{Differences:} PCA linear in input space; Kernel PCA non-linear via kernels; Whitening rescales to identity covariance (often after PCA) instead of just keeping top-variance directions.
 }
 
 \end{multicols}
+
 \end{document}
