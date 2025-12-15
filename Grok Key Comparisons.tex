@@ -1,0 +1,238 @@
+\documentclass[twocolumn]{article}
+\usepackage[a4paper, margin=0.2cm]{geometry}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{array}
+\usepackage{microtype}
+\usepackage{titlesec}
+
+% Use \tiny globally
+\tiny
+
+% Reduce spacing further for tiny font
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1pt}
+\setlength{\columnsep}{0.4cm}
+
+% Compact lists
+\setlist[itemize]{noitemsep, topsep=0pt, leftmargin=*, parsep=0pt, partopsep=0pt, itemsep=0pt}
+
+% Minimal section spacing
+\titlespacing*{\section}{0pt}{3pt}{0pt}
+\titlespacing*{\subsection}{0pt}{2pt}{0pt}
+
+\begin{document}
+
+\section*{Classical Classification}
+
+\subsection*{K-Nearest Neighbors (KNN)}
+\textbf{Pros}: Simple, no training (lazy), non-linear boundaries, multi-class friendly  
+\textbf{Cons}: Slow prediction (distances to all points), memory-heavy, curse of dimensionality, sensitive to irrelevant features, needs $k$ \& metric tuning
+
+\subsection*{Bayes Optimal Classifier}
+\textbf{Pros}: Theoretically optimal error, true posteriors, benchmark  
+\textbf{Cons}: Intractable (needs full distributions)
+
+\subsection*{Naive Bayes}
+\textbf{Pros}: Very fast, high-dimensional friendly, robust even if independence violated, handles missing values, great for text/spam  
+\textbf{Cons}: Strong independence assumption, zero-frequency (needs smoothing), poor probability calibration
+
+\subsection*{Linear Discriminant Analysis (LDA)}
+\textbf{Pros}: Supervised dim. reduction, efficient, optimal for Gaussian data with shared covariance, good separation  
+\textbf{Cons}: Gaussian + equal covariance assumption, outlier-sensitive, linear boundaries only
+
+\subsection*{Naive Bayes vs LDA}
+\textbf{Similar}: Both generative, Gaussian assumption (Gaussian NB), Bayes-derived  
+\textbf{Diff}: NB: diagonal covariance (independence), faster, better with little data  
+\quad LDA: full shared covariance, more accurate if correlations exist, needs more data
+
+\subsection*{Logistic Regression}
+\textbf{Pros}: Calibrated probabilities, interpretable coefficients, efficient, robust to noise, good for linear separability  
+\textbf{Cons}: Linear boundary, outlier-sensitive, needs scaling, can overfit high-dim without regularization
+
+\subsection*{Logistic vs NB/LDA}
+\textbf{Similar}: Probabilistic output, multi-class capable  
+\textbf{Diff}: Logistic: discriminative (direct $P(y|x)$), no distribution assumption, often better accuracy  
+\quad NB/LDA: generative, strong assumptions, better with tiny/missing data
+
+\subsection*{Support Vector Machine (SVM)}
+\textbf{Pros}: Max-margin $\to$ robust, high-dim effective, memory-efficient (support vectors)  
+\textbf{Cons}: Slow training, parameter-sensitive, poor with overlap, no direct probabilities
+
+\subsection*{Kernel SVM}
+\textbf{Pros}: Non-linear boundaries, flexible kernels  
+\textbf{Cons}: $O(n^2$--$n^3)$ training, hard to interpret, overfitting risk
+
+\subsection*{Linear vs Kernel SVM}
+\textbf{Similar}: Max margin, support vectors  
+\textbf{Diff}: Linear: fast/simple; Kernel: non-linear but slow
+
+\section*{Regression \& Optimization}
+
+\subsection*{Linear Regression}
+\textbf{Pros}: Simple, interpretable, closed-form, fast  
+\textbf{Cons}: Linear only, outlier-sensitive, multicollinearity issues
+
+\subsection*{Ridge (L2)}
+\textbf{Pros}: Handles multicollinearity, reduces overfitting, stable  
+\textbf{Cons}: No feature selection, bias introduced, $\lambda$ tuning
+
+\subsection*{LASSO (L1)}
+\textbf{Pros}: Feature selection (sparsity), high-dim friendly  
+\textbf{Cons}: Unstable with correlated features (picks one)
+
+\subsection*{Ridge vs LASSO}
+\textbf{Similar}: Shrink coefficients, regularized linear reg.  
+\textbf{Diff}: Ridge keeps all; LASSO zeros some out
+
+\subsection*{Kernel Ridge Regression}
+\textbf{Pros}: Non-linear via kernel, closed-form  
+\textbf{Cons}: $O(n^3)$, no sparsity
+
+\subsection*{Support Vector Regression (SVR)}
+\textbf{Pros}: Outlier-robust ($\varepsilon$-tube), non-linear via kernels  
+\textbf{Cons}: Parameter-sensitive, slow training
+
+\subsection*{Non-linear Regression}
+\textbf{Pros}: Complex relationships  
+\textbf{Cons}: Overfitting risk, harder interpretation, expensive
+
+\subsection*{Gradient Descent Variants}
+
+\begin{tabular}{@{}lll@{}}
+\toprule
+Variant       & Pros                                      & Cons                                      \\
+\midrule
+Batch GD      & Stable, exact gradient, convex guarantee  & Slow, high memory, stuck in flat regions  \\
+Stochastic GD & Fast, escapes local minima, low memory    & Noisy, needs LR tuning, may not converge  \\
+Mini-batch    & Balance, GPU-friendly, lower variance     & Batch size tuning                         \\
+\bottomrule
+\end{tabular}
+
+\subsection*{Coordinate Descent}
+\textbf{Pros}: Simple, fast for sparse/L1 (Lasso)  
+\textbf{Cons}: Slow convergence possible, order-dependent
+
+\subsection*{RANSAC}
+\textbf{Pros}: Very robust to outliers  
+\textbf{Cons}: Non-deterministic, threshold \& iteration tuning
+
+\section*{Unsupervised Learning}
+
+\subsection*{K-Means}
+\textbf{Pros}: Fast, scalable, simple  
+\textbf{Cons}: Spherical clusters assumed, init-sensitive, needs $k$
+
+\subsection*{Gaussian Mixture Model (GMM)}
+\textbf{Pros}: Soft clustering, elliptical clusters, probabilities  
+\textbf{Cons}: Init-sensitive, overfit risk, heavier computation
+
+\subsection*{K-Means vs GMM}
+\textbf{Similar}: Centroid-based, EM-like  
+\textbf{Diff}: K-Means: hard/spherical; GMM: soft/elliptical
+
+\subsection*{Expectation-Maximization (EM)}
+\textbf{Pros}: Latent variables, monotonic improvement  
+\textbf{Cons}: Local optima, slow, init-sensitive
+
+\subsection*{Dimensionality Reduction}
+\textbf{Pros}: Faster computation, noise removal, visualization, curse of dim. mitigation  
+\textbf{Cons}: Information loss, interpretation harder
+
+\subsection*{Feature Selection vs Dim. Reduction}
+\textbf{Similar}: Reduce features  
+\textbf{Diff}: Selection: original subset (interpretable); Reduction: new features
+
+\subsection*{PCA}
+\textbf{Pros}: Max variance, orthogonal, effective reduction  
+\textbf{Cons}: Scaling-sensitive, linear only, variance $\neq$ information
+
+\subsection*{SVD}
+\textbf{Pros}: Numerically stable, general matrix factor  
+\textbf{Cons}: Linear, expensive for huge matrices  
+\textit{(Underpins PCA)}
+
+\section*{Deep Learning}
+
+\subsection*{Multi-Layer Perceptron (MLP)}
+\textbf{Pros}: Universal approximator, non-linear  
+\textbf{Cons}: Black-box, data-hungry, overfit-prone
+
+\subsection*{Convolutional NN (CNN)}
+\textbf{Pros}: Image/grid excellence, parameter sharing, translation invariance, hierarchical features  
+\textbf{Cons}: Data/compute heavy, poor on non-spatial data
+
+\subsection*{MLP vs CNN}
+\textbf{Similar}: Deep nets, backprop  
+\textbf{Diff}: MLP: fully connected; CNN: local + shared weights
+
+\subsection*{Regularization Techniques}
+
+\begin{tabular}{@{}lll@{}}
+\toprule
+Technique       & Pros                                      & Cons                                      \\
+\midrule
+Dropout         & Effective, reduces co-adaptation          & Longer training, larger nets needed       \\
+Early Stopping  & Simple, saves time, prevents overfit      & Needs val set, may stop early             \\
+Data Augmentation & More data, better generalization       & Risk of unrealistic samples, longer train \\
+\bottomrule
+\end{tabular}
+
+\subsection*{Data Whitening / Normalization}
+\textbf{Pros}: Faster convergence, no feature dominance, helps distance algorithms  
+\textbf{Cons}: Possible test leak, may amplify noise
+
+\subsection*{Weight Initialization}
+Xavier/Glorot (sigmoid/tanh), He (ReLU), Orthogonal recommended
+
+\subsection*{Learning Curves}
+\begin{itemize}
+\item Train $\uparrow$, gap large $\to$ high variance (regularize / more data)
+\item Both low, small gap $\to$ high bias (bigger model)
+\item Train $\uparrow$, still improving $\to$ more data/training
+\end{itemize}
+
+\section*{Computer Vision Tasks}
+
+\begin{itemize}
+\item \textbf{Object Detection}: Bounding boxes + class (e.g., YOLO)
+\item \textbf{Semantic Segmentation}: Pixel class (same class = same label)
+\item \textbf{Instance Segmentation}: Pixel class + instance distinction
+\end{itemize}
+
+\subsection*{Image Processing}
+
+\begin{tabular}{@{}lll@{}}
+\toprule
+Task            & Pros                                      & Cons                                      \\
+\midrule
+Denoising       & Better quality/tasks (DnCNN strong)       & Blur risk, compute-heavy (deep)           \\
+Deblurring      & Removes shake/motion                      & Harder than denoising                     \\
+Super-Resolution& Enhances details (GANs hallucinate)       & Artifacts possible                        \\
+Colorization    & Revives old photos                        & Subjective/inaccurate                     \\
+Compression     & Storage/transmission savings              & Quality loss (lossy)                      \\
+Fusion          & Richer multi-modal info                   & Alignment issues                          \\
+\bottomrule
+\end{tabular}
+
+\subsection*{Quality Metrics}
+
+\begin{tabular}{@{}lll@{}}
+\toprule
+Metric & Pros                          & Cons                                  \\
+\midrule
+MSE    & Simple, differentiable        & Poor human correlation, outlier-sensitive \\
+SSIM   & Perceptual (structure)        & Complex, scaling/alignment sensitive     \\
+LPIPS  & Closest to human judgment     & Heavy, needs pretrained net              \\
+\bottomrule
+\end{tabular}
+
+\section*{General Tips}
+\begin{itemize}
+\item \textbf{Feature Normalization}: Essential for distance/gradient methods
+\item \textbf{Output Transformation}: Stabilizes variance, aids assumptions (inverse needed)
+\item \textbf{Model Comparison}: Use accuracy, speed, interpretability, multiple validation metrics
+\end{itemize}
+
+\end{document}
