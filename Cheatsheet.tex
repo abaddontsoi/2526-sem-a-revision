@@ -1,7 +1,7 @@
 \documentclass[a4paper]{article}
 
 % Packages for layout and math
-\usepackage[margin=0.2cm]{geometry} % Narrow margins to fit more content
+\usepackage[margin=0.5cm]{geometry} % Narrow margins to fit more content
 \usepackage{multicol} % For the 2-column layout
 \usepackage{amsmath,amssymb}
 \usepackage{enumitem}
@@ -313,6 +313,17 @@ PCA finds directions of maximum variance (eigenvectors of covariance, or top rig
 }
 
 \Block{%
+\textbf{How to Perform PCA}\\
+Given data matrix $X\in\mathbb R^{n\times d}$ (rows = samples, columns = features).\\
+1.\ \textbf{Center (and scale) data}: compute mean $\mu=\frac1n\sum_i x_i$, set $\tilde x_i=x_i-\mu$; optionally standardize each feature to unit variance.\\
+2.\ \textbf{Compute covariance or use SVD}: covariance $S=\tfrac1n\tilde X^\top\tilde X$ and solve eigenproblem $S w_k=\lambda_k w_k$; or compute SVD $\tilde X=U\Sigma V^\top$ and take columns of $V$ as principal directions.\\
+3.\ \textbf{Sort components}: sort eigenvalues (or singular values) descending; choose top $k$ such that $\sum_{j=1}^k\lambda_j/\sum_{j=1}^d\lambda_j$ reaches desired variance (e.g.\ 95\%).\\
+4.\ \textbf{Project data}: form $W_k=[w_1,\dots,w_k]$ and compute low-dim representation $Z=\tilde X W_k\in\mathbb R^{n\times k}$ (rows are principal component scores).\\
+5.\ \textbf{(Optional) Reconstruct}: approximate original data by $\hat X=Z W_k^\top+\mu$ for visualization or compression error analysis.\\
+\textbf{Notes:} Always center data; scaling is crucial if features have different units. Use truncated/randomized SVD for large, sparse, or high-dimensional $X$.
+}
+
+\Block{%
 \textbf{Kernel PCA}\\
 Objective: same as PCA in feature space; eigendecomposition of centered kernel matrix $K$.\\
 Kernel PCA applies PCA in an implicit feature space using a kernel matrix instead of the covariance of raw features.\\
@@ -331,7 +342,11 @@ Whitening transforms data so that it has zero mean and identity covariance (deco
 \Block{%
 \textbf{Looking at Learning Curves}\\
 Objective: plot train and test error vs. training set size or training iterations to diagnose bias/variance.\\
-Learning curves plot train and validation error vs. training set size or epochs.\\
+\textbf{Healthy curve}: high-loss start, rapid decreases, gradually flattens as model converges \\ 
+\textbf{Underfitting}: Decrease slightly, flat at hight loss\\
+\textbf{Large learning rate, small batch, noisy data}: Decrease with oscillation\\
+\textbf{Too small learning rate, bad initialization}: Initially flat then drop\\
+\textbf{Overfitting}: Good decreasing for training, val/test loss drop then increase\\
 \textbf{Pros:} Helps diagnose high-bias vs. high-variance; Guides whether to get more data or change model complexity.\\
 \textbf{Cons:} Requires repeated training; Interpretation can be ambiguous with noisy curves.
 }
