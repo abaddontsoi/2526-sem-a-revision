@@ -163,6 +163,7 @@ Linear Regression fits a line to data by minimizing squared errors, predicting o
 \Block{%
 \textbf{Ridge Regression}\\
 Objective: $\min_w \sum_i (y_i-w^\top x_i)^2 + \lambda\|w\|_2^2$.\\
+\textbf{Closed Form}: $(X^TX + \alpha I)^{-1}X^Ty$ \\
 Ridge Regression adds L2 regularization to linear regression to shrink coefficients and handle multicollinearity.\\
 \textbf{Pros:} Reduces overfitting and stabilizes estimates; Good for correlated features.\\
 \textbf{Cons:} Includes all features (no selection); Bias introduced by regularization.
@@ -171,6 +172,7 @@ Ridge Regression adds L2 regularization to linear regression to shrink coefficie
 \Block{%
 \textbf{Lasso Regression}\\
 Objective: $\min_w \sum_i (y_i-w^\top x_i)^2 + \lambda\|w\|_1$.\\
+\textbf{w}: $\text{sign}(w)\max(0, |w_{LS}| - \alpha)$ \\
 Lasso Regression uses L1 regularization, which can set some coefficients to zero for feature selection.\\
 \textbf{Pros:} Performs automatic feature selection; Handles multicollinearity.\\
 \textbf{Cons:} Can be unstable with highly correlated features; Bias like Ridge.
@@ -246,6 +248,11 @@ Objective: same as MLP, $\min_\theta \sum_i \ell(y_i,f_\theta(x_i))+\\Omega(\the
 CNN uses convolutional layers for feature extraction, ideal for grid data like images.\\
 \textbf{Pros:} Excellent for spatial hierarchies (e.g., images); Parameter sharing reduces compute.\\
 \textbf{Cons:} Requires large data and GPU; Overfits without augmentation.
+}
+
+\Block{%
+\textbf{Regularization} \\
+\textbf{Usage}: Avoid overfitting, Obtain numerically more stable solutions, enforce the desired parameter space as a prior
 }
 
 \Block{%
